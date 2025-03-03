@@ -2,7 +2,7 @@ const express = require("express");
 const plaid = require("plaid");
 const auth = require("../middleware/auth");
 const router = express.Router();
-const User = require("../models/user"); // ✅ Add this line at the top
+const User = require("../models/User"); // ✅ Add this line at the top
 
 
 // const client = new plaid.PlaidApi(

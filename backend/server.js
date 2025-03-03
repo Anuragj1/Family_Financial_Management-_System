@@ -3,6 +3,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const punycode = require("punycode/"); 
+const userRoutes = require("./routes/userRoutes");
 
 
 dotenv.config();
@@ -14,7 +15,11 @@ app.use(cors());
 // Database Connection
 connectDB();
 
+
+
 // Routes
+console.log("✅ Loading User Routes...");
+app.use("/api/users", userRoutes); 
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/protected", require("./routes/privateRoutes"));
 app.use("/api/assets", require("./routes/assetRoutes")); 
