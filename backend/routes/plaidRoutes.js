@@ -11,16 +11,19 @@ const client = new plaid.PlaidApi(
     })
 );
 
-// ✅ 1. Create Link Token (Frontend Plaid Link ke liye)
+// console.log("🔍 PLAID_CLIENT_ID:", process.env.PLAID_CLIENT_ID);
+// console.log("🔍 PLAID_SECRET:", process.env.PLAID_SECRET);
+
+
 router.post("/create-link-token", auth, async (req, res) => {
     try {
         console.log("🔹 Requesting Plaid Link Token...");
 
         const response = await client.linkTokenCreate({
-            user: { client_user_id: req.user.id },  // Ensure this is valid
+            user: { client_user_id: req.user.id }, 
             client_name: "Family Finance",
             products: ["transactions"],
-            country_codes: ["US"], // ✅ If using India, Plaid may not support
+            country_codes: ["US"],
             language: "en",
         });
 
@@ -32,7 +35,7 @@ router.post("/create-link-token", auth, async (req, res) => {
     }
 });
 
-// ✅ 2. Exchange Public Token for Access Token
+
 router.post("/exchange-public-token", auth, async (req, res) => {
     try {
         const { public_token } = req.body;
@@ -45,7 +48,6 @@ router.post("/exchange-public-token", auth, async (req, res) => {
     }
 });
 
-// ✅ 3. Fetch Transactions from Plaid API
 router.get("/transactions", auth, async (req, res) => {
     try {
         const response = await client.transactionsGet({
