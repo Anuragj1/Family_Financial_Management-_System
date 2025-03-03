@@ -20,6 +20,8 @@ app.use("/api/protected", require("./routes/privateRoutes"));
 app.use("/api/assets", require("./routes/assetRoutes")); 
 app.use("/api/ai", require("./routes/aiRoutes")); 
 app.use("/api/transactions", require("./routes/transactionRoutes"));
+app.use("/api/plaid", require("./routes/plaidRoutes"));
+
 
 
 

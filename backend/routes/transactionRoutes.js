@@ -8,11 +8,11 @@ console.log("Transaction Routes Loaded!");
 
 // ✅ Add a new transaction
 router.post("/add", auth, async (req, res) => {
-    console.log("🔹 POST /api/transactions/add hit!");  // Debugging
+    // console.log("🔹 POST /api/transactions/add hit!");  // Debugging
 
     try {
         const { amount, type, category, description, date } = req.body;
-        console.log("Transaction Data:", req.body);  // Debugging
+        // console.log("Transaction Data:", req.body);  // Debugging
 
         const transaction = new Transaction({
             user: req.user.id,
@@ -22,7 +22,7 @@ router.post("/add", auth, async (req, res) => {
             description,
             date
         });
-        console.log("📝 New Transaction:", transaction);  // Debugging
+        // console.log("📝 New Transaction:", transaction);  // Debugging
         await transaction.save();
         res.status(201).json(transaction);
     } catch (err) {
@@ -49,13 +49,13 @@ router.get("/alerts", auth, async (req, res) => {
         let alerts = [];
         
         transactions.forEach(tx => {
-            if (tx.amount > 10000) { // 🔥 High-value transaction alert
+            if (tx.amount > 10000) { 
                 alerts.push({
                     message: `High-value transaction detected: ₹${tx.amount}`,
                     transaction: tx
                 });
             }
-            if (tx.category === "Unknown" || tx.description.includes("Suspicious")) { // 🔥 Suspicious keyword detection
+            if (tx.category === "Unknown" || tx.description.includes("Suspicious")) { 
                 alerts.push({
                     message: `Suspicious transaction detected: ${tx.description}`,
                     transaction: tx
