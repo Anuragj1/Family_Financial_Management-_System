@@ -1,23 +1,21 @@
 const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
-    // Token Header Se Lo
     const token = req.header("Authorization");
-    
+    console.log("🔍 Received Token:", token);
+
     if (!token) {
-        return res.status(401).json({ msg: "Access Denied! No token provided." });
+        return res.status(401).json({ msg: "No token, authorization denied!" });
     }
 
     try {
-        // Token me "Bearer " remove karne ke liye split() use kar rahe hain
-        const tokenValue = token.split(" ")[1]; 
-        
-        // JWT Token Verify Karo
-        const decoded = jwt.verify(tokenValue, process.env.JWT_SECRET);
-        req.user = decoded; // User data request me store kar lo
-        
-        next(); // Next middleware ya controller ko call karo
+        const decoded = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET);
+        console.log("✅ Decoded Token:", decoded);
+        req.user = decoded;
+        next();
     } catch (err) {
-        res.status(400).json({ msg: "Invalid Token!" });
+        console.error("❌ Invalid Token Error:", err.message);
+        res.status(401).json({ msg: "Invalid Token!" });
     }
 };
+

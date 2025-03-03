@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
 import { getAIInsights } from "../api/ai";
+import { getTransactionAlerts } from "../api/transactions";
 import { Card, CardContent } from "../components/ui/Card";
 import { PieChart, Pie, Cell, LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { Bell, Home, TrendingUp, Wallet } from "lucide-react";
+import PlaidLinkButton from "../components/PlaidLinkButton";
 
 const Dashboard = () => {
     const [insights, setInsights] = useState(null);
+    const [alerts, setAlerts] = useState([]);
+    const [publicToken, setPublicToken] = useState(null);
     const token = localStorage.getItem("token");
 
     useEffect(() => {
@@ -16,14 +21,54 @@ const Dashboard = () => {
                 console.error("Error fetching AI insights", error);
             }
         };
-
         fetchInsights();
+
+        const fetchAlerts = async () => {
+            const data = await getTransactionAlerts(token);
+            setAlerts(data);
+        };
+        fetchAlerts();
     }, []);
+
+    const handleSuccess = async (token) => {
+        setPublicToken(token);
+        console.log("🔹 Sending Public Token to Backend...");
+
+        const res = await fetch("http://localhost:5000/api/plaid/exchange-public-token", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ public_token: token }),
+        });
+
+        const data = await res.json();
+        console.log("✅ Exchange Response:", data);
+    };
 
     return (
         <div className="p-6 bg-gray-100 min-h-screen">
-            <h2 className="text-3xl font-bold mb-4">Dashboard</h2>
-
+            <nav className="bg-gray-900 text-white p-4 flex justify-between items-center">
+                <h1 className="text-2xl font-bold">Family Finance</h1>
+                <div className="flex items-center space-x-4">
+                    <Home className="w-6 h-6" />
+                    <TrendingUp className="w-6 h-6" />
+                    <Wallet className="w-6 h-6" />
+                    <div className="relative">
+                        <Bell className="w-6 h-6 text-yellow-400" />
+                        {alerts.length > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-red-600 text-white text-xs px-1.5 py-0.5 rounded-full">
+                                {alerts.length}
+                            </span>
+                        )}
+                    </div>
+                </div>
+            </nav>
+            <h2 className="text-2xl font-bold mt-4">Dashboard</h2>
+            <PlaidLinkButton onSuccess={handleSuccess} />
+            {publicToken && <p className="text-green-600 mt-4">Public Token: {publicToken}</p>}
+            
             {/* ✅ Financial Summary Cards */}
             <div className="grid grid-cols-3 gap-4 mb-6">
                 <Card><CardContent><p>Bank Balance</p><h2>$124,500.00</h2></CardContent></Card>
